@@ -2,6 +2,7 @@
 
 <%= link_to "#{@merchant.name}'s Item index", "/merchants/#{@merchant.id}/items" %>
 <%= link_to "#{@merchant.name}'s Invoice index", "/merchants/#{@merchant.id}/invoices" %>
+<%= link_to "View All Discounts", merchant_bulk_discounts_path(@merchant) %>
 
 
 <h2>Top 5 Customers by Total Number of Succesful Transactions:</h2>
