@@ -65,4 +65,28 @@ RSpec.describe 'User Story 1 - Merchant Bulk Discounts Index' do
       end
     end
   end
+
+  describe 'Merchant Bulk Discount Delete' do
+    describe 'When I visit my bulk discounts index, next to each bulk discount I see a link to delete it' do
+      it 'When I click this link, I am redirected back to the bulk discounts index page, discount is not listed' do
+        merchant_stephen = Merchant.create!(name: "Stephen's Shady Store")
+
+        item_toothpaste = merchant_stephen.items.create!(name: "Item Toothpaste", description: "The worst toothpaste you can find", unit_price: 4000 )
+
+        bulk_discount1 = merchant_stephen.bulk_discounts.create(percentage_discount: 30, quantity_threshold: 15)
+        bulk_discount2 = merchant_stephen.bulk_discounts.create(percentage_discount: 20, quantity_threshold: 10)
+        bulk_discount3 = merchant_stephen.bulk_discounts.create(percentage_discount: 10, quantity_threshold: 5)
+
+        visit merchant_bulk_discounts_path(merchant_stephen)
+        within("#discount-#{bulk_discount1.id}") do
+          click_link("Delete")
+        end
+
+        expect(current_path).to eq(merchant_bulk_discounts_path(merchant_stephen))
+        expect(page).to_not have_content("Discount: #{bulk_discount1.percentage_discount}% off if customer buys #{bulk_discount1.quantity_threshold} or more items")
+        expect(page).to have_content("Discount: #{bulk_discount2.percentage_discount}% off if customer buys #{bulk_discount2.quantity_threshold} or more items")
+
+      end
+    end
+  end
 end
