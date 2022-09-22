@@ -1,4 +1,5 @@
-<img width="880" alt="Screen Shot 2022-09-21 at 1 24 13 PM" src="https://user-images.githubusercontent.com/102133027/191592811-8d89d231-457a-4eee-a74c-9ccbb70612f1.png">
+![Screen Shot 2022-09-21 at 6 34 47 PM](https://user-images.githubusercontent.com/102133027/191633830-7962c882-9e4e-48de-a13e-71ff94db65e7.png)
+
 
 
 # Little Esty Shop
