@@ -6,6 +6,9 @@
 <p> Status: <%= @invoice.status %></p>
 <p> Created on: <%= @invoice.created_at.strftime('%A, %B %d, %Y') %></p>
 <p> Total Revenue: <%= number_to_currency(@invoice.total_revenue/100) %>
+
+<p> Total Discounted Revenue: <%= number_to_currency(@invoice.discounted_revenue/100) %>
+
 <h3> Customer: </h3>
   <%= @invoice.customer.first_name %>
   <%= @invoice.customer.last_name %>
@@ -17,6 +20,13 @@
     <ul>
     <% item.invoice_items.each do |invoice_item| %>
       <div id= "invoice_item_<%= invoice_item.id %>">
+
+      <% if invoice_item.discount_to_use == nil %>
+        <p> No bulk discount was applied </p>
+      <% else %>
+        <p><%= link_to "Bulk discount that was applied", merchant_bulk_discount_path(@merchant, invoice_item.discount_to_use), method: :get %></p>
+      <% end %>
+
       <li><p> Quantity: <%= invoice_item.quantity %></p></li>
       <li><p> Unit Price: <%= number_to_currency(invoice_item.unit_price/100) %></p></li>
 

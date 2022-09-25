@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Merchant Invoice Show Page' do
-  before :each do
-    names_array = {'gjcarew' => 22, 'stephenfabian' => 25, 'Rileybmcc' => 22, 'KevinT001' => 11}
-    allow(GithubFacade).to receive(:commits).and_return(names_array)
+  # before :each do
+  #   names_array = {'gjcarew' => 22, 'stephenfabian' => 25, 'Rileybmcc' => 22, 'KevinT001' => 11}
+  #   allow(GithubFacade).to receive(:commits).and_return(names_array)
 
-    pull_requests_count = 3
-    allow(GithubFacade).to receive(:pull_requests).and_return(pull_requests_count)
-  end
+  #   pull_requests_count = 3
+  #   allow(GithubFacade).to receive(:pull_requests).and_return(pull_requests_count)
+  # end
   describe 'When I visit my merchants invoice show page(/merchants/merchant_id/invoices/invoice_id)' do
     describe 'Then I see information related to that invoice' do 
       it 'Invoice id, status, created_at date(Monday, July 18, 2019), Customer first/last name' do
@@ -153,6 +153,81 @@ RSpec.describe 'Merchant Invoice Show Page' do
           end
 
         end
+      end
+    end
+  end
+
+  describe 'Merchant Invoice Show Page: Total Revenue and Discounted Revenue' do
+    describe 'When I visit my merchant invoice show page I see the total revenue for my merchant from this invoice (not including discounts)' do
+      it 'And I see the total discounted revenue for my merchant from this invoice which includes bulk discounts in the calculation' do
+
+        merchant_stephen = Merchant.create!(name: "Stephen's Shady Store")
+        merchant_roger = Merchant.create!(name: "Roger's Fancy Store")
+        customer1 = Customer.create!(first_name: "Abdul", last_name: "Redd")
+
+        item_toothpaste = merchant_stephen.items.create!(name: "Item Toothpaste", description: "The worst toothpaste you can find", unit_price: 4000 )
+        item_lamp = merchant_stephen.items.create!(name: "Item Lamp", description: "You bet, it's a lamp", unit_price: 250)
+
+        invoice1 = customer1.invoices.create!(status: "completed")
+        invoice2 = customer1.invoices.create!(status: "completed")
+    #both invoices_items should get the 20% discount, since 20% is the highest discount, and they are both over the 10 unit threshold
+    #bulk_discount D is not included, since it is not for merchant_stephen
+        invoice_itemA = invoice1.invoice_items.create!(quantity: 100, unit_price: 2500, status: "packaged", item_id: item_toothpaste.id)
+        invoice_itemB = invoice1.invoice_items.create!(quantity: 15, unit_price: 1500, status: "packaged", item_id: item_lamp.id)
+
+        bulk_discountA = merchant_stephen.bulk_discounts.create(percentage_discount: 20, quantity_threshold: 10)
+        bulk_discountB = merchant_stephen.bulk_discounts.create(percentage_discount: 15, quantity_threshold: 15)
+        bulk_discountC = merchant_stephen.bulk_discounts.create(percentage_discount: 50, quantity_threshold: 200)
+        
+        bulk_discountD = merchant_roger.bulk_discounts.create(percentage_discount: 18, quantity_threshold: 15)
+        visit merchant_invoice_path(merchant_stephen, invoice1)
+        
+        expect(page).to have_content("Total Revenue: $2,725.00")
+        expect(page).to have_content("Total Discounted Revenue: $2,180.00")
+
+      end
+    end
+  end
+
+  describe 'Merchant Invoice Show Page: Link to applied discounts' do
+    describe 'When I visit my merchant invoice show page' do
+      it 'Next to each invoice item I see a link to the show page for the bulk discount that was applied (if any)' do
+
+        merchant_stephen = Merchant.create!(name: "Stephen's Shady Store")
+        merchant_roger = Merchant.create!(name: "Roger's Fancy Store")
+        customer1 = Customer.create!(first_name: "Abdul", last_name: "Redd")
+
+        item_toothpaste = merchant_stephen.items.create!(name: "Item Toothpaste", description: "The worst toothpaste you can find", unit_price: 4000 )
+        item_lamp = merchant_stephen.items.create!(name: "Item Lamp", description: "You bet, it's a lamp", unit_price: 250)
+        item_desk = merchant_roger.items.create!(name: "Item Desk", description: "sturdy desk", unit_price: 250)
+
+        invoice1 = customer1.invoices.create!(status: "completed")
+        invoice2 = customer1.invoices.create!(status: "completed")
+        invoice3 = customer1.invoices.create!(status: "completed")
+
+        invoice_itemA = invoice1.invoice_items.create!(quantity: 100, unit_price: 2500, status: "packaged", item_id: item_toothpaste.id)
+        invoice_itemB = invoice1.invoice_items.create!(quantity: 15, unit_price: 1500, status: "packaged", item_id: item_lamp.id)
+        invoice_itemC = invoice2.invoice_items.create!(quantity: 15, unit_price: 1500, status: "packaged", item_id: item_desk.id)
+
+        bulk_discountA = merchant_stephen.bulk_discounts.create(percentage_discount: 20, quantity_threshold: 10)
+        bulk_discountB = merchant_stephen.bulk_discounts.create(percentage_discount: 15, quantity_threshold: 15)
+        bulk_discountC = merchant_stephen.bulk_discounts.create(percentage_discount: 50, quantity_threshold: 200)
+        
+        bulk_discountD = merchant_roger.bulk_discounts.create(percentage_discount: 18, quantity_threshold: 20)
+
+        visit merchant_invoice_path(merchant_stephen, invoice1)
+
+        within("#invoice_item_#{invoice_itemA.id}") do
+          click_link("Bulk discount that was applied")
+          expect(current_path).to eq(merchant_bulk_discount_path(merchant_stephen, bulk_discountA))
+        end
+
+        visit merchant_invoice_path(merchant_stephen, invoice2)
+
+        within("#invoice_item_#{invoice_itemC.id}") do
+          expect(page).to have_content("No bulk discount was applied")
+        end
+
       end
     end
   end
