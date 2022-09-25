@@ -10,12 +10,20 @@ class Invoice < ApplicationRecord
     customer.first_name + ' ' + customer.last_name
   end
 
+  # def total_revenue
+  #   invoice_items.sum do |invoice_item|
+  #     invoice_item.unit_price * invoice_item.quantity
+  #   end
+  # end
+
   def total_revenue
-    revenue = 0
-    invoice_items.each do |ii|
-      revenue += ii.unit_price * ii.quantity
+   invoice_items.sum('unit_price * quantity')
+  end
+
+  def discounted_revenue
+    invoice_items.sum do |invoice_item|
+      invoice_item.invoice_item_discounted_revenue
     end
-    revenue
   end
 
   def self.incomplete
