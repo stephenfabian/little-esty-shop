@@ -136,7 +136,7 @@ RSpec.describe 'Merchant Invoice Show Page' do
 
           visit merchant_invoice_path(steph_merchant, invoice1)
 
-          within("#invoice_item_#{invoice_item1.id}") do
+          within("#item_#{item1.id}") do
             select "Shipped", from: "status"
             click_button "Update Item Status"
             
@@ -144,7 +144,7 @@ RSpec.describe 'Merchant Invoice Show Page' do
             expect(invoice_item1.reload.status).to eq("shipped")
           end
 
-          within("#invoice_item_#{invoice_item2.id}") do
+          within("#item_#{item2.id}") do
             select "Shipped", from: "status"
             click_button "Update Item Status"
             
@@ -217,14 +217,14 @@ RSpec.describe 'Merchant Invoice Show Page' do
 
         visit merchant_invoice_path(merchant_stephen, invoice1)
 
-        within("#invoice_item_#{invoice_itemA.id}") do
+        within("#item_#{item_toothpaste.id}") do
           click_link("Bulk discount that was applied")
           expect(current_path).to eq(merchant_bulk_discount_path(merchant_stephen, bulk_discountA))
         end
 
         visit merchant_invoice_path(merchant_stephen, invoice2)
 
-        within("#invoice_item_#{invoice_itemC.id}") do
+        within("#item_#{item_desk.id}") do
           expect(page).to have_content("No bulk discount was applied")
         end
 

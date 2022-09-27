@@ -213,9 +213,3 @@ RSpec.describe 'Merchant_Dashboard' do
     end
   end 
 end
-# As a merchant
-# When I visit my merchant dashboard
-# In the section for "Items Ready to Ship",
-# Next to each Item name I see the date that the invoice was created
-# And I see the date formatted like "Monday, July 18, 2019"
-# And I see that the list is ordered from oldest to newest

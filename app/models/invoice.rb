@@ -10,14 +10,8 @@ class Invoice < ApplicationRecord
     customer.first_name + ' ' + customer.last_name
   end
 
-  # def total_revenue
-  #   invoice_items.sum do |invoice_item|
-  #     invoice_item.unit_price * invoice_item.quantity
-  #   end
-  # end
-
   def total_revenue
-   invoice_items.sum('unit_price * quantity')
+    invoice_items.sum('unit_price * quantity')
   end
 
   def discounted_revenue
@@ -32,5 +26,4 @@ class Invoice < ApplicationRecord
       .group(:id)
       .order(:created_at)
   end
-  
 end
