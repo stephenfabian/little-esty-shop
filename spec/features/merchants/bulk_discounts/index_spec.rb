@@ -89,4 +89,31 @@ RSpec.describe 'User Story 1 - Merchant Bulk Discounts Index' do
       end
     end
   end
+
+  describe 'User Story 9 - API Story - Upcoming Holidays header' do
+    describe 'When I visit the discounts index page' do
+      describe 'I see a section with a header of "Upcoming Holidays' do
+        it 'within this section the name and date of the next 3 upcoming US holidays are listed' do
+
+          merchant_stephen = Merchant.create!(name: "Stephen's Shady Store")
+
+          item_toothpaste = merchant_stephen.items.create!(name: "Item Toothpaste", description: "The worst toothpaste you can find", unit_price: 4000 )
+
+          bulk_discount1 = merchant_stephen.bulk_discounts.create(percentage_discount: 30, quantity_threshold: 15)
+          bulk_discount2 = merchant_stephen.bulk_discounts.create(percentage_discount: 20, quantity_threshold: 10)
+          bulk_discount3 = merchant_stephen.bulk_discounts.create(percentage_discount: 10, quantity_threshold: 5)
+
+          visit merchant_bulk_discounts_path(merchant_stephen)
+          save_and_open_page
+
+          within("#upcoming_holidays") do
+          expect(page).to have_content("Columbus Day")
+          expect(page).to have_content("Veterans Day")
+          expect(page).to have_content("Thanksgiving Day")
+          end
+
+        end
+      end
+    end
+  end
 end
