@@ -25,7 +25,6 @@ RSpec.describe 'User Story 1 - Merchant Bulk Discounts Index' do
               expect(page).to have_content("Discount: #{bulk_discount1.percentage_discount}% off if customer buys #{bulk_discount1.quantity_threshold} or more items")
               expect(page).to have_content("Discount: #{bulk_discount2.percentage_discount}% off if customer buys #{bulk_discount2.quantity_threshold} or more items")
               expect(page).to_not have_content("Discount: #{bulk_discount3.percentage_discount}% off if customer buys #{bulk_discount3.quantity_threshold} or more items")
-
             end
           end
         end
@@ -85,7 +84,6 @@ RSpec.describe 'User Story 1 - Merchant Bulk Discounts Index' do
         expect(current_path).to eq(merchant_bulk_discounts_path(merchant_stephen))
         expect(page).to_not have_content("Discount: #{bulk_discount1.percentage_discount}% off if customer buys #{bulk_discount1.quantity_threshold} or more items")
         expect(page).to have_content("Discount: #{bulk_discount2.percentage_discount}% off if customer buys #{bulk_discount2.quantity_threshold} or more items")
-
       end
     end
   end
@@ -104,12 +102,10 @@ RSpec.describe 'User Story 1 - Merchant Bulk Discounts Index' do
           bulk_discount3 = merchant_stephen.bulk_discounts.create(percentage_discount: 10, quantity_threshold: 5)
 
           visit merchant_bulk_discounts_path(merchant_stephen)
-          save_and_open_page
 
           within("#upcoming_holidays") do
-          expect(page).to have_content("Columbus Day")
-          expect(page).to have_content("Veterans Day")
-          expect(page).to have_content("Thanksgiving Day")
+          expect("Columbus Day").to appear_before("Veterans Day")
+          expect("Veterans Day").to appear_before("Thanksgiving Day")
           end
 
         end

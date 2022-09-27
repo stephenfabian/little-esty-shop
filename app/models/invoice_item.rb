@@ -22,7 +22,7 @@ class InvoiceItem < ApplicationRecord
 
   def invoice_item_discounted_revenue
     if self.discount_to_use == nil
-        invoice_item_revenue 
+      invoice_item_revenue 
     else
       discount = ((self.discount_to_use).percentage_discount)/100.to_f
       discounted_revenue = invoice_item_revenue - (invoice_item_revenue * discount)
